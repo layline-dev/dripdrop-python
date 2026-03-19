@@ -1,0 +1,1214 @@
+openapi: 3.0.3
+info:
+  title: Drip Drop API
+  version: 1.0.0
+  description: API for integrations with Drip Drop.Authenticate by passing your API
+    key in the `X-API-Key` header.
+paths:
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - ApiKeyAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /v1/contacts/:
+    get:
+      operationId: contacts_list
+      description: Retrieve a paginated list of contacts for your account.
+      summary: List contacts
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - contacts
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContactList'
+          description: ''
+    post:
+      operationId: contacts_create
+      description: Create a new contact with optional email and phone number.
+      summary: Create a contact
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Contact'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Contact'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+          description: ''
+  /v1/contacts/{uuid}/:
+    get:
+      operationId: contacts_retrieve
+      description: Retrieve a single contact by UUID.
+      summary: Get a contact
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - contacts
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+          description: ''
+    put:
+      operationId: contacts_update
+      description: Replace all fields on an existing contact.
+      summary: Update a contact
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Contact'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Contact'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Contact'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+          description: ''
+    patch:
+      operationId: contacts_partial_update
+      description: Update specific fields on an existing contact.
+      summary: Patch a contact
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContact'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContact'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContact'
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+          description: ''
+    delete:
+      operationId: contacts_destroy
+      description: Permanently delete a contact.
+      summary: Delete a contact
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - contacts
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '204':
+          description: No response body
+  /v1/custom-fields/:
+    get:
+      operationId: custom_fields_list
+      description: Retrieve custom field definitions for your account. Optionally
+        filter by target_model query parameter.
+      summary: List custom field definitions
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - custom_fields
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCustomFieldDefinitionList'
+          description: ''
+    post:
+      operationId: custom_fields_create
+      description: Create a new custom field definition for a supported model.
+      summary: Create a custom field definition
+      tags:
+      - custom_fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldDefinition'
+          description: ''
+  /v1/custom-fields/{uuid}/:
+    get:
+      operationId: custom_fields_retrieve
+      description: Retrieve a single custom field definition by UUID.
+      summary: Get a custom field definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - custom_fields
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldDefinition'
+          description: ''
+    put:
+      operationId: custom_fields_update
+      description: Replace all fields on an existing custom field definition.
+      summary: Update a custom field definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - custom_fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomFieldDefinition'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldDefinition'
+          description: ''
+    patch:
+      operationId: custom_fields_partial_update
+      description: Update specific fields on an existing custom field definition.
+      summary: Patch a custom field definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - custom_fields
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomFieldDefinition'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomFieldDefinition'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCustomFieldDefinition'
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomFieldDefinition'
+          description: ''
+    delete:
+      operationId: custom_fields_destroy
+      description: Permanently delete a custom field definition.
+      summary: Delete a custom field definition
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - custom_fields
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '204':
+          description: No response body
+  /v1/enrollments/:
+    get:
+      operationId: enrollments_list
+      description: Retrieve all flow enrollments for your account.
+      summary: List enrollments
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - enrollments
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicFlowEnrollmentList'
+          description: ''
+    post:
+      operationId: enrollments_create
+      description: Enroll a contact into a flow by providing flow_uuid and contact_uuid.
+      summary: Enroll a contact
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlowEnrollment'
+          description: ''
+  /v1/enrollments/{uuid}/:
+    delete:
+      operationId: enrollments_destroy
+      description: Remove a contact from a flow by enrollment UUID.
+      summary: Unenroll a contact
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - enrollments
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '204':
+          description: No response body
+  /v1/flows/:
+    get:
+      operationId: flows_list
+      description: Retrieve all flows for your account.
+      summary: List flows
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - flows
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicFlowList'
+          description: ''
+  /v1/flows/{uuid}/:
+    get:
+      operationId: flows_retrieve
+      description: Retrieve a single flow by UUID.
+      summary: Get a flow
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - flows
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlow'
+          description: ''
+  /v1/flows/{uuid}/create-contact-and-enroll/:
+    post:
+      operationId: flows_create_contact_and_enroll_create
+      description: Create a new contact and enroll them in this flow. Returns an error
+        if a contact with the provided email or phone already exists.
+      summary: Create contact and enroll in flow
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - flows
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactAndEnroll'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateContactAndEnroll'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateContactAndEnroll'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateContactAndEnrollSuccess'
+          description: ''
+        '400':
+          description: Validation error
+        '404':
+          description: Flow not found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactAlreadyExists'
+          description: ''
+components:
+  schemas:
+    Contact:
+      type: object
+      description: |-
+        Serializer mixin that adds tag support to any model serializer.
+
+        The target model must have a ManyToManyField named `tags` pointing to tags.Tag.
+
+        Write request format: {"tags": ["<tag-uuid>", ...]}
+        Read response format: {"tags": [{"uuid": "...", "name": "...", ...}, ...]}
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        primary_email:
+          allOf:
+          - $ref: '#/components/schemas/EmailAddress'
+          nullable: true
+        primary_phone:
+          allOf:
+          - $ref: '#/components/schemas/PhoneNumber'
+          nullable: true
+        custom_fields:
+          type: object
+          additionalProperties: {}
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+          writeOnly: true
+      required:
+      - created
+      - first_name
+      - modified
+      - uuid
+    ContactAlreadyExists:
+      type: object
+      properties:
+        error:
+          type: string
+        contact:
+          $ref: '#/components/schemas/Contact'
+      required:
+      - contact
+      - error
+    CreateContactAndEnroll:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+          maxLength: 20
+        custom_fields:
+          type: object
+          additionalProperties: {}
+      required:
+      - first_name
+    CreateContactAndEnrollSuccess:
+      type: object
+      properties:
+        message:
+          type: string
+        contact:
+          $ref: '#/components/schemas/Contact'
+        enrollment:
+          $ref: '#/components/schemas/PublicFlowEnrollment'
+      required:
+      - contact
+      - enrollment
+      - message
+    CustomFieldDefinition:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        display_name:
+          type: string
+          description: Human-readable label for the custom field
+          maxLength: 255
+        key:
+          type: string
+          description: Machine-friendly identifier (e.g., 'company_name'). Auto-generated
+            from display name if omitted.
+          maxLength: 255
+        field_type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+        target_model:
+          type: string
+          writeOnly: true
+          description: Target model in 'app_label.model' format (e.g., 'contacts.contact')
+        target_model_display:
+          type: string
+          readOnly: true
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          nullable: true
+          description: Configuration for the field (e.g., choices for 'choice' type,
+            max_length for 'char')
+        sort_order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        is_archived:
+          type: boolean
+          title: Archived
+        is_in_use:
+          type: boolean
+          readOnly: true
+      required:
+      - created
+      - display_name
+      - field_type
+      - is_in_use
+      - modified
+      - target_model
+      - target_model_display
+      - uuid
+    EmailAddress:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 254
+      required:
+      - created
+      - email
+      - modified
+      - uuid
+    FieldTypeEnum:
+      enum:
+      - char
+      - text
+      - integer
+      - decimal
+      - boolean
+      - date
+      - datetime
+      - email
+      - url
+      - choice
+      type: string
+      description: |-
+        * `char` - Text
+        * `text` - Long Text
+        * `integer` - Integer
+        * `decimal` - Decimal
+        * `boolean` - Boolean
+        * `date` - Date
+        * `datetime` - Date & Time
+        * `email` - Email
+        * `url` - URL
+        * `choice` - Single Choice
+    FlowEnrollmentStatusesEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      type: integer
+      description: |-
+        * `0` - Not Started
+        * `1` - Active
+        * `2` - Paused
+        * `3` - Error
+        * `4` - Completed
+        * `5` - Processing
+        * `6` - Unsubscribed
+    FlowStatusEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      type: integer
+      description: |-
+        * `0` - Draft
+        * `1` - Scheduled
+        * `2` - Active
+        * `3` - Paused
+        * `4` - Complete
+        * `5` - Archived
+    PaginatedContactList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+    PaginatedCustomFieldDefinitionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinition'
+    PaginatedPublicFlowEnrollmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicFlowEnrollment'
+    PaginatedPublicFlowList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicFlow'
+    PatchedContact:
+      type: object
+      description: |-
+        Serializer mixin that adds tag support to any model serializer.
+
+        The target model must have a ManyToManyField named `tags` pointing to tags.Tag.
+
+        Write request format: {"tags": ["<tag-uuid>", ...]}
+        Read response format: {"tags": [{"uuid": "...", "name": "...", ...}, ...]}
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          nullable: true
+          maxLength: 255
+        primary_email:
+          allOf:
+          - $ref: '#/components/schemas/EmailAddress'
+          nullable: true
+        primary_phone:
+          allOf:
+          - $ref: '#/components/schemas/PhoneNumber'
+          nullable: true
+        custom_fields:
+          type: object
+          additionalProperties: {}
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+          writeOnly: true
+    PatchedCustomFieldDefinition:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        display_name:
+          type: string
+          description: Human-readable label for the custom field
+          maxLength: 255
+        key:
+          type: string
+          description: Machine-friendly identifier (e.g., 'company_name'). Auto-generated
+            from display name if omitted.
+          maxLength: 255
+        field_type:
+          $ref: '#/components/schemas/FieldTypeEnum'
+        target_model:
+          type: string
+          writeOnly: true
+          description: Target model in 'app_label.model' format (e.g., 'contacts.contact')
+        target_model_display:
+          type: string
+          readOnly: true
+        required:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        options:
+          nullable: true
+          description: Configuration for the field (e.g., choices for 'choice' type,
+            max_length for 'char')
+        sort_order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        is_archived:
+          type: boolean
+          title: Archived
+        is_in_use:
+          type: boolean
+          readOnly: true
+    PhoneNumber:
+      type: object
+      properties:
+        number:
+          type: string
+          maxLength: 128
+        object_id:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        content_type:
+          type: integer
+          nullable: true
+      required:
+      - number
+    PublicFlow:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/FlowStatusEnum'
+          readOnly: true
+      required:
+      - created
+      - modified
+      - name
+      - status
+      - uuid
+    PublicFlowEnrollment:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/FlowEnrollmentStatusesEnum'
+          readOnly: true
+        flow_uuid:
+          type: string
+          format: uuid
+        contact_uuid:
+          type: string
+          format: uuid
+      required:
+      - contact_uuid
+      - created
+      - flow_uuid
+      - modified
+      - status
+      - uuid
+    CurrentPassword:
+      type: object
+      properties:
+        current_password:
+          type: string
+          writeOnly: true
+      required:
+      - current_password
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Your account API key
+servers:
+- url: https://api.dripdrop.dev
+  description: Drip Drop API
