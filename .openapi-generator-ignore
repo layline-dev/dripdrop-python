@@ -21,3 +21,7 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+# Custom files (not generated)
+.github/workflows/publish.yml
+.github/dependabot.yml
