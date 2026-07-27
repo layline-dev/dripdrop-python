@@ -1,0 +1,135 @@
+name: Regenerate SDK from public API schema
+
+on:
+  repository_dispatch:
+    types: [public-api-schema-updated]
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: Repository that contains the public API schema
+        required: true
+        default: layline-dev/dripdrop
+      source_ref:
+        description: Source commit SHA, branch, or tag to fetch the schema from
+        required: true
+        default: main
+      schema_path:
+        description: Path to the schema file in the source repository
+        required: true
+        default: backend/public_api_schema.yaml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: public-api-schema-updated
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve dispatch inputs
+        id: inputs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_SOURCE_REPO: ${{ github.event.client_payload.source_repo }}
+          DISPATCH_SOURCE_REF: ${{ github.event.client_payload.source_ref }}
+          DISPATCH_SOURCE_SHA: ${{ github.event.client_payload.source_sha }}
+          DISPATCH_SCHEMA_PATH: ${{ github.event.client_payload.schema_path }}
+          MANUAL_SOURCE_REPO: ${{ inputs.source_repo }}
+          MANUAL_SOURCE_REF: ${{ inputs.source_ref }}
+          MANUAL_SCHEMA_PATH: ${{ inputs.schema_path }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            source_repo="${MANUAL_SOURCE_REPO:-layline-dev/dripdrop}"
+            source_ref="${MANUAL_SOURCE_REF:-main}"
+            schema_path="${MANUAL_SCHEMA_PATH:-backend/public_api_schema.yaml}"
+          else
+            source_repo="${DISPATCH_SOURCE_REPO:-layline-dev/dripdrop}"
+            source_ref="${DISPATCH_SOURCE_SHA:-${DISPATCH_SOURCE_REF:-main}}"
+            schema_path="${DISPATCH_SCHEMA_PATH:-backend/public_api_schema.yaml}"
+          fi
+
+          {
+            echo "source_repo=$source_repo"
+            echo "source_ref=$source_ref"
+            echo "schema_path=$schema_path"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Download public API schema
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REPO: ${{ steps.inputs.outputs.source_repo }}
+          SOURCE_REF: ${{ steps.inputs.outputs.source_ref }}
+          SCHEMA_PATH: ${{ steps.inputs.outputs.schema_path }}
+        run: |
+          set -euo pipefail
+          gh api \
+            -H "Accept: application/vnd.github.raw" \
+            "/repos/${SOURCE_REPO}/contents/${SCHEMA_PATH}?ref=${SOURCE_REF}" \
+            > "Drip Drop API.yaml"
+
+      - name: Regenerate SDK
+        run: scripts/regenerate-sdk.sh
+
+      - name: Check for meaningful diff
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No SDK changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Patch-bump package version
+        if: steps.diff.outputs.changed == 'true'
+        id: bump
+        run: |
+          set -euo pipefail
+          new_version="$(scripts/bump-version.py)"
+          echo "version=$new_version" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-python@v5
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install test/build dependencies
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r test-requirements.txt build
+
+      - name: Run tests
+        if: steps.diff.outputs.changed == 'true'
+        run: pytest --cov=dripdrop
+
+      - name: Build package
+        if: steps.diff.outputs.changed == 'true'
+        run: python -m build
+
+      - name: Commit regenerated SDK
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          SOURCE_REPO: ${{ steps.inputs.outputs.source_repo }}
+          SOURCE_REF: ${{ steps.inputs.outputs.source_ref }}
+          SCHEMA_PATH: ${{ steps.inputs.outputs.schema_path }}
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: regenerate SDK from public API schema" \
+            -m "Source: ${SOURCE_REPO}@${SOURCE_REF}:${SCHEMA_PATH}" \
+            -m "Package version: ${VERSION}"
+          git push
