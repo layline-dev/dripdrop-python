@@ -1,0 +1,18 @@
+generatorName: python
+inputSpec: Drip Drop API.yaml
+outputDir: .
+gitUserId: layline-dev
+gitRepoId: dripdrop-python
+operationIdNameMappings:
+  custom_fields_create: create
+  custom_fields_destroy: destroy
+  custom_fields_list: list
+  custom_fields_partial_update: partial_update
+  custom_fields_retrieve: retrieve
+  custom_fields_update: update
+additionalProperties:
+  packageName: dripdrop
+  projectName: dripdrop
+  packageVersion: 0.1.0
+  packageUrl: https://github.com/layline-dev/dripdrop-python
+  removeOperationIdPrefix: true
