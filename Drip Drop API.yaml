@@ -2,8 +2,7 @@ openapi: 3.0.3
 info:
   title: Drip Drop API
   version: 1.0.0
-  description: API for integrations with Drip Drop.Authenticate by passing your API
-    key in the `X-API-Key` header.
+  description: Documentation of API endpoints of Drip Drop
 paths:
   /schema/:
     get:
@@ -67,6 +66,7 @@ paths:
           - hi
           - hr
           - hsb
+          - ht
           - hu
           - hy
           - ia
@@ -128,7 +128,6 @@ paths:
       tags:
       - schema
       security:
-      - ApiKeyAuth: []
       - {}
       responses:
         '200':
@@ -152,7 +151,7 @@ paths:
           description: ''
   /v1/contacts/:
     get:
-      operationId: contacts_list
+      operationId: v1_contacts_list
       description: Retrieve a paginated list of contacts for your account.
       summary: List contacts
       parameters:
@@ -182,8 +181,6 @@ paths:
           type: string
       tags:
       - contacts
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -192,7 +189,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedContactList'
           description: ''
     post:
-      operationId: contacts_create
+      operationId: v1_contacts_create
       description: Create a new contact with optional email and phone number.
       summary: Create a contact
       tags:
@@ -209,8 +206,6 @@ paths:
             schema:
               $ref: '#/components/schemas/Contact'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -220,7 +215,7 @@ paths:
           description: ''
   /v1/contacts/{uuid}/:
     get:
-      operationId: contacts_retrieve
+      operationId: v1_contacts_retrieve
       description: Retrieve a single contact by UUID.
       summary: Get a contact
       parameters:
@@ -232,8 +227,6 @@ paths:
         required: true
       tags:
       - contacts
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -242,7 +235,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     put:
-      operationId: contacts_update
+      operationId: v1_contacts_update
       description: Replace all fields on an existing contact.
       summary: Update a contact
       parameters:
@@ -266,8 +259,6 @@ paths:
             schema:
               $ref: '#/components/schemas/Contact'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -276,7 +267,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     patch:
-      operationId: contacts_partial_update
+      operationId: v1_contacts_partial_update
       description: Update specific fields on an existing contact.
       summary: Patch a contact
       parameters:
@@ -299,8 +290,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedContact'
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -309,7 +298,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     delete:
-      operationId: contacts_destroy
+      operationId: v1_contacts_destroy
       description: Permanently delete a contact.
       summary: Delete a contact
       parameters:
@@ -321,14 +310,121 @@ paths:
         required: true
       tags:
       - contacts
-      security:
-      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
+  /v1/contacts/bulk/:
+    post:
+      operationId: v1_contacts_bulk_create
+      description: |-
+        Create up to 500 contacts in one request. Validation is all-or-nothing: if any contact fails validation, nothing is created and the errors identify each failing contact by its index.
+
+        Duplicate handling follows your account's dedupe strategy and the `on_duplicate` flag:
+        - `error` (default): if any row matches an existing contact or an earlier row in the same request, nothing is created and a 409 lists the conflicting rows.
+        - `skip`: the non-duplicate rows are created and the duplicates are reported in `skipped`.
+
+        Only rows that will actually be created are counted against your plan's contact quota.
+      summary: Bulk create contacts
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactBulkCreateResponse'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactBulkCreateConflict'
+          description: ''
+  /v1/contacts/duplicates/:
+    get:
+      operationId: v1_contacts_duplicates_list
+      description: Report of contacts that already share a dedupe key (email / phone),
+        grouped into clusters, scanned by your account's dedupe strategy. When the
+        strategy is `none` it falls back to email+phone so the report is still useful
+        for cleanup.
+      summary: List duplicate contact clusters
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - contacts
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDuplicateClusterList'
+          description: ''
+    post:
+      operationId: v1_contacts_duplicates_create
+      description: 'Dry run: given a list of contacts, report per-row whether each
+        would be created or skipped as a duplicate under your account''s dedupe strategy
+        — against both existing contacts and the other rows in the request. Nothing
+        is created.'
+      summary: Preview duplicates for incoming contacts
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactDuplicatePreviewResponse'
+          description: ''
   /v1/custom-fields/:
     get:
-      operationId: custom_fields_list
+      operationId: v1_custom_fields_list
       description: Retrieve custom field definitions for your account. Optionally
         filter by target_model query parameter.
       summary: List custom field definitions
@@ -359,8 +455,6 @@ paths:
           type: string
       tags:
       - custom_fields
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -369,7 +463,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedCustomFieldDefinitionList'
           description: ''
     post:
-      operationId: custom_fields_create
+      operationId: v1_custom_fields_create
       description: Create a new custom field definition for a supported model.
       summary: Create a custom field definition
       tags:
@@ -386,8 +480,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomFieldDefinition'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -397,7 +489,7 @@ paths:
           description: ''
   /v1/custom-fields/{uuid}/:
     get:
-      operationId: custom_fields_retrieve
+      operationId: v1_custom_fields_retrieve
       description: Retrieve a single custom field definition by UUID.
       summary: Get a custom field definition
       parameters:
@@ -409,8 +501,6 @@ paths:
         required: true
       tags:
       - custom_fields
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -419,7 +509,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     put:
-      operationId: custom_fields_update
+      operationId: v1_custom_fields_update
       description: Replace all fields on an existing custom field definition.
       summary: Update a custom field definition
       parameters:
@@ -443,8 +533,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomFieldDefinition'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -453,7 +541,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     patch:
-      operationId: custom_fields_partial_update
+      operationId: v1_custom_fields_partial_update
       description: Update specific fields on an existing custom field definition.
       summary: Patch a custom field definition
       parameters:
@@ -476,8 +564,6 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedCustomFieldDefinition'
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -486,7 +572,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     delete:
-      operationId: custom_fields_destroy
+      operationId: v1_custom_fields_destroy
       description: Permanently delete a custom field definition.
       summary: Delete a custom field definition
       parameters:
@@ -498,14 +584,12 @@ paths:
         required: true
       tags:
       - custom_fields
-      security:
-      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
   /v1/enrollments/:
     get:
-      operationId: enrollments_list
+      operationId: v1_enrollments_list
       description: Retrieve all flow enrollments for your account.
       summary: List enrollments
       parameters:
@@ -529,8 +613,6 @@ paths:
           type: integer
       tags:
       - enrollments
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -539,7 +621,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedPublicFlowEnrollmentList'
           description: ''
     post:
-      operationId: enrollments_create
+      operationId: v1_enrollments_create
       description: Enroll a contact into a flow by providing flow_uuid and contact_uuid.
       summary: Enroll a contact
       tags:
@@ -556,8 +638,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PublicFlowEnrollment'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -567,7 +647,7 @@ paths:
           description: ''
   /v1/enrollments/{uuid}/:
     delete:
-      operationId: enrollments_destroy
+      operationId: v1_enrollments_destroy
       description: Remove a contact from a flow by enrollment UUID.
       summary: Unenroll a contact
       parameters:
@@ -579,14 +659,12 @@ paths:
         required: true
       tags:
       - enrollments
-      security:
-      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
   /v1/flows/:
     get:
-      operationId: flows_list
+      operationId: v1_flows_list
       description: Retrieve all flows for your account.
       summary: List flows
       parameters:
@@ -610,8 +688,6 @@ paths:
           type: integer
       tags:
       - flows
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -621,7 +697,7 @@ paths:
           description: ''
   /v1/flows/{uuid}/:
     get:
-      operationId: flows_retrieve
+      operationId: v1_flows_retrieve
       description: Retrieve a single flow by UUID.
       summary: Get a flow
       parameters:
@@ -633,8 +709,6 @@ paths:
         required: true
       tags:
       - flows
-      security:
-      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -644,7 +718,7 @@ paths:
           description: ''
   /v1/flows/{uuid}/create-contact-and-enroll/:
     post:
-      operationId: flows_create_contact_and_enroll_create
+      operationId: v1_flows_create_contact_and_enroll_create
       description: Create a new contact and enroll them in this flow. Returns an error
         if a contact with the provided email or phone already exists.
       summary: Create contact and enroll in flow
@@ -669,8 +743,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateContactAndEnroll'
         required: true
-      security:
-      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -682,6 +754,8 @@ paths:
           description: Validation error
         '404':
           description: Flow not found
+        '429':
+          description: Contact limit for your plan has been reached
         '409':
           content:
             application/json:
@@ -771,6 +845,14 @@ components:
         custom_fields:
           type: object
           additionalProperties: {}
+        on_match:
+          nullable: true
+          description: |-
+            Set to 'create' to create a new contact even when one already matches the account's dedupe strategy. Omit to return 409 on a match (default).
+
+            * `create` - create
+          allOf:
+          - $ref: '#/components/schemas/OnMatchEnum'
       required:
       - first_name
     CreateContactAndEnrollSuccess:
@@ -847,6 +929,46 @@ components:
       - target_model
       - target_model_display
       - uuid
+    DuplicateCluster:
+      type: object
+      description: |-
+        Serializes a dedup.DuplicateCluster (key + the contacts sharing it) for
+        the duplicate report and the setting-change guard's blocked payload.
+      properties:
+        key_type:
+          type: string
+        key_value:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateClusterContact'
+          readOnly: true
+      required:
+      - contacts
+      - key_type
+      - key_value
+    DuplicateClusterContact:
+      type: object
+      description: One contact inside a duplicate cluster (report + guard payload).
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+      required:
+      - email
+      - name
+      - phone
+      - uuid
     EmailAddress:
       type: object
       properties:
@@ -866,9 +988,13 @@ components:
           type: string
           format: email
           maxLength: 254
+        email_opted_out:
+          type: boolean
+          readOnly: true
       required:
       - created
       - email
+      - email_opted_out
       - modified
       - uuid
     FieldTypeEnum:
@@ -929,6 +1055,55 @@ components:
         * `3` - Paused
         * `4` - Complete
         * `5` - Archived
+    ImportResolution:
+      type: object
+      description: Per-row dedupe outcome in the import dry-run preview (aligned by
+        row).
+      properties:
+        outcome:
+          $ref: '#/components/schemas/OutcomeEnum'
+        matched_by:
+          type: string
+          nullable: true
+        matched_contact_uuid:
+          type: string
+          format: uuid
+          nullable: true
+        is_ambiguous:
+          type: boolean
+        notes:
+          type: array
+          items:
+            type: string
+      required:
+      - is_ambiguous
+      - matched_by
+      - matched_contact_uuid
+      - notes
+      - outcome
+    OnDuplicateEnum:
+      enum:
+      - error
+      - skip
+      type: string
+      description: |-
+        * `error` - error
+        * `skip` - skip
+    OnMatchEnum:
+      enum:
+      - create
+      type: string
+      description: '* `create` - create'
+    OutcomeEnum:
+      enum:
+      - will_create
+      - will_update
+      - will_skip
+      type: string
+      description: |-
+        * `will_create` - will_create
+        * `will_update` - will_update
+        * `will_skip` - will_skip
     PaginatedContactList:
       type: object
       required:
@@ -975,6 +1150,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomFieldDefinition'
+    PaginatedDuplicateClusterList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateCluster'
     PaginatedPublicFlowEnrollmentList:
       type: object
       required:
@@ -1125,16 +1323,68 @@ components:
         number:
           type: string
           maxLength: 128
-        object_id:
-          type: integer
-          maximum: 2147483647
-          minimum: 0
-          nullable: true
-        content_type:
-          type: integer
-          nullable: true
+        sms_opted_out:
+          type: boolean
+          readOnly: true
       required:
       - number
+      - sms_opted_out
+    PublicContactBulkCreateConflict:
+      type: object
+      properties:
+        error:
+          type: string
+        conflicts:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - conflicts
+      - error
+    PublicContactBulkCreateRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        on_duplicate:
+          $ref: '#/components/schemas/OnDuplicateEnum'
+      required:
+      - contacts
+    PublicContactBulkCreateResponse:
+      type: object
+      properties:
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        skipped:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - created
+    PublicContactDuplicatePreviewRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+      required:
+      - contacts
+    PublicContactDuplicatePreviewResponse:
+      type: object
+      properties:
+        resolutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportResolution'
+      required:
+      - resolutions
     PublicFlow:
       type: object
       properties:
@@ -1203,12 +1453,3 @@ components:
           writeOnly: true
       required:
       - current_password
-  securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: X-API-Key
-      description: Your account API key
-servers:
-- url: https://api.dripdrop.dev
-  description: Drip Drop API

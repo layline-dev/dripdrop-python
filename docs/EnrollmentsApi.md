@@ -1,16 +1,16 @@
 # dripdrop.EnrollmentsApi
 
-All URIs are relative to *https://api.dripdrop.dev*
+All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create**](EnrollmentsApi.md#create) | **POST** /v1/enrollments/ | Enroll a contact
-[**destroy**](EnrollmentsApi.md#destroy) | **DELETE** /v1/enrollments/{uuid}/ | Unenroll a contact
-[**list**](EnrollmentsApi.md#list) | **GET** /v1/enrollments/ | List enrollments
+[**enrollments_create**](EnrollmentsApi.md#enrollments_create) | **POST** /v1/enrollments/ | Enroll a contact
+[**enrollments_destroy**](EnrollmentsApi.md#enrollments_destroy) | **DELETE** /v1/enrollments/{uuid}/ | Unenroll a contact
+[**enrollments_list**](EnrollmentsApi.md#enrollments_list) | **GET** /v1/enrollments/ | List enrollments
 
 
-# **create**
-> PublicFlowEnrollment create(public_flow_enrollment)
+# **enrollments_create**
+> PublicFlowEnrollment enrollments_create(public_flow_enrollment)
 
 Enroll a contact
 
@@ -18,7 +18,6 @@ Enroll a contact into a flow by providing flow_uuid and contact_uuid.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -26,22 +25,12 @@ from dripdrop.models.public_flow_enrollment import PublicFlowEnrollment
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -51,11 +40,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Enroll a contact
-        api_response = api_instance.create(public_flow_enrollment)
-        print("The response of EnrollmentsApi->create:\n")
+        api_response = api_instance.enrollments_create(public_flow_enrollment)
+        print("The response of EnrollmentsApi->enrollments_create:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling EnrollmentsApi->create: %s\n" % e)
+        print("Exception when calling EnrollmentsApi->enrollments_create: %s\n" % e)
 ```
 
 
@@ -73,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -88,8 +77,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **destroy**
-> destroy(uuid)
+# **enrollments_destroy**
+> enrollments_destroy(uuid)
 
 Unenroll a contact
 
@@ -97,29 +86,18 @@ Remove a contact from a flow by enrollment UUID.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -129,9 +107,9 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Unenroll a contact
-        api_instance.destroy(uuid)
+        api_instance.enrollments_destroy(uuid)
     except Exception as e:
-        print("Exception when calling EnrollmentsApi->destroy: %s\n" % e)
+        print("Exception when calling EnrollmentsApi->enrollments_destroy: %s\n" % e)
 ```
 
 
@@ -149,7 +127,7 @@ void (empty response body)
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -164,8 +142,8 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **list**
-> PaginatedPublicFlowEnrollmentList list(ordering=ordering, page=page, page_size=page_size)
+# **enrollments_list**
+> PaginatedPublicFlowEnrollmentList enrollments_list(ordering=ordering, page=page, page_size=page_size)
 
 List enrollments
 
@@ -173,7 +151,6 @@ Retrieve all flow enrollments for your account.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -181,22 +158,12 @@ from dripdrop.models.paginated_public_flow_enrollment_list import PaginatedPubli
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -208,11 +175,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # List enrollments
-        api_response = api_instance.list(ordering=ordering, page=page, page_size=page_size)
-        print("The response of EnrollmentsApi->list:\n")
+        api_response = api_instance.enrollments_list(ordering=ordering, page=page, page_size=page_size)
+        print("The response of EnrollmentsApi->enrollments_list:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling EnrollmentsApi->list: %s\n" % e)
+        print("Exception when calling EnrollmentsApi->enrollments_list: %s\n" % e)
 ```
 
 
@@ -232,7 +199,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 

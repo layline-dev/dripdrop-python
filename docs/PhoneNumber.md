@@ -6,8 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **number** | **str** |  | 
-**object_id** | **int** |  | [optional] 
-**content_type** | **int** |  | [optional] 
+**sms_opted_out** | **bool** |  | [readonly] 
 
 ## Example
 

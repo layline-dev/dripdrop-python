@@ -1,19 +1,19 @@
 # dripdrop.CustomFieldsApi
 
-All URIs are relative to *https://api.dripdrop.dev*
+All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**create**](CustomFieldsApi.md#create) | **POST** /v1/custom-fields/ | Create a custom field definition
-[**destroy**](CustomFieldsApi.md#destroy) | **DELETE** /v1/custom-fields/{uuid}/ | Delete a custom field definition
-[**list**](CustomFieldsApi.md#list) | **GET** /v1/custom-fields/ | List custom field definitions
-[**partial_update**](CustomFieldsApi.md#partial_update) | **PATCH** /v1/custom-fields/{uuid}/ | Patch a custom field definition
-[**retrieve**](CustomFieldsApi.md#retrieve) | **GET** /v1/custom-fields/{uuid}/ | Get a custom field definition
-[**update**](CustomFieldsApi.md#update) | **PUT** /v1/custom-fields/{uuid}/ | Update a custom field definition
+[**custom_fields_create**](CustomFieldsApi.md#custom_fields_create) | **POST** /v1/custom-fields/ | Create a custom field definition
+[**custom_fields_destroy**](CustomFieldsApi.md#custom_fields_destroy) | **DELETE** /v1/custom-fields/{uuid}/ | Delete a custom field definition
+[**custom_fields_list**](CustomFieldsApi.md#custom_fields_list) | **GET** /v1/custom-fields/ | List custom field definitions
+[**custom_fields_partial_update**](CustomFieldsApi.md#custom_fields_partial_update) | **PATCH** /v1/custom-fields/{uuid}/ | Patch a custom field definition
+[**custom_fields_retrieve**](CustomFieldsApi.md#custom_fields_retrieve) | **GET** /v1/custom-fields/{uuid}/ | Get a custom field definition
+[**custom_fields_update**](CustomFieldsApi.md#custom_fields_update) | **PUT** /v1/custom-fields/{uuid}/ | Update a custom field definition
 
 
-# **create**
-> CustomFieldDefinition create(custom_field_definition)
+# **custom_fields_create**
+> CustomFieldDefinition custom_fields_create(custom_field_definition)
 
 Create a custom field definition
 
@@ -21,7 +21,6 @@ Create a new custom field definition for a supported model.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -29,22 +28,12 @@ from dripdrop.models.custom_field_definition import CustomFieldDefinition
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -54,11 +43,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Create a custom field definition
-        api_response = api_instance.create(custom_field_definition)
-        print("The response of CustomFieldsApi->create:\n")
+        api_response = api_instance.custom_fields_create(custom_field_definition)
+        print("The response of CustomFieldsApi->custom_fields_create:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->create: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_create: %s\n" % e)
 ```
 
 
@@ -76,7 +65,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -91,8 +80,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **destroy**
-> destroy(uuid)
+# **custom_fields_destroy**
+> custom_fields_destroy(uuid)
 
 Delete a custom field definition
 
@@ -100,29 +89,18 @@ Permanently delete a custom field definition.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -132,9 +110,9 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Delete a custom field definition
-        api_instance.destroy(uuid)
+        api_instance.custom_fields_destroy(uuid)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->destroy: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_destroy: %s\n" % e)
 ```
 
 
@@ -152,7 +130,7 @@ void (empty response body)
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -167,8 +145,8 @@ void (empty response body)
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **list**
-> PaginatedCustomFieldDefinitionList list(ordering=ordering, page=page, page_size=page_size, search=search)
+# **custom_fields_list**
+> PaginatedCustomFieldDefinitionList custom_fields_list(ordering=ordering, page=page, page_size=page_size, search=search)
 
 List custom field definitions
 
@@ -176,7 +154,6 @@ Retrieve custom field definitions for your account. Optionally filter by target_
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -184,22 +161,12 @@ from dripdrop.models.paginated_custom_field_definition_list import PaginatedCust
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -212,11 +179,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # List custom field definitions
-        api_response = api_instance.list(ordering=ordering, page=page, page_size=page_size, search=search)
-        print("The response of CustomFieldsApi->list:\n")
+        api_response = api_instance.custom_fields_list(ordering=ordering, page=page, page_size=page_size, search=search)
+        print("The response of CustomFieldsApi->custom_fields_list:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->list: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_list: %s\n" % e)
 ```
 
 
@@ -237,7 +204,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -252,8 +219,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **partial_update**
-> CustomFieldDefinition partial_update(uuid, patched_custom_field_definition=patched_custom_field_definition)
+# **custom_fields_partial_update**
+> CustomFieldDefinition custom_fields_partial_update(uuid, patched_custom_field_definition=patched_custom_field_definition)
 
 Patch a custom field definition
 
@@ -261,7 +228,6 @@ Update specific fields on an existing custom field definition.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -270,22 +236,12 @@ from dripdrop.models.patched_custom_field_definition import PatchedCustomFieldDe
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -296,11 +252,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Patch a custom field definition
-        api_response = api_instance.partial_update(uuid, patched_custom_field_definition=patched_custom_field_definition)
-        print("The response of CustomFieldsApi->partial_update:\n")
+        api_response = api_instance.custom_fields_partial_update(uuid, patched_custom_field_definition=patched_custom_field_definition)
+        print("The response of CustomFieldsApi->custom_fields_partial_update:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->partial_update: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_partial_update: %s\n" % e)
 ```
 
 
@@ -319,7 +275,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -334,8 +290,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **retrieve**
-> CustomFieldDefinition retrieve(uuid)
+# **custom_fields_retrieve**
+> CustomFieldDefinition custom_fields_retrieve(uuid)
 
 Get a custom field definition
 
@@ -343,7 +299,6 @@ Retrieve a single custom field definition by UUID.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -351,22 +306,12 @@ from dripdrop.models.custom_field_definition import CustomFieldDefinition
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -376,11 +321,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Get a custom field definition
-        api_response = api_instance.retrieve(uuid)
-        print("The response of CustomFieldsApi->retrieve:\n")
+        api_response = api_instance.custom_fields_retrieve(uuid)
+        print("The response of CustomFieldsApi->custom_fields_retrieve:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->retrieve: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_retrieve: %s\n" % e)
 ```
 
 
@@ -398,7 +343,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
@@ -413,8 +358,8 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **update**
-> CustomFieldDefinition update(uuid, custom_field_definition)
+# **custom_fields_update**
+> CustomFieldDefinition custom_fields_update(uuid, custom_field_definition)
 
 Update a custom field definition
 
@@ -422,7 +367,6 @@ Replace all fields on an existing custom field definition.
 
 ### Example
 
-* Api Key Authentication (ApiKeyAuth):
 
 ```python
 import dripdrop
@@ -430,22 +374,12 @@ from dripdrop.models.custom_field_definition import CustomFieldDefinition
 from dripdrop.rest import ApiException
 from pprint import pprint
 
-# Defining the host is optional and defaults to https://api.dripdrop.dev
+# Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = dripdrop.Configuration(
-    host = "https://api.dripdrop.dev"
+    host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure API key authorization: ApiKeyAuth
-configuration.api_key['ApiKeyAuth'] = os.environ["API_KEY"]
-
-# Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
-# configuration.api_key_prefix['ApiKeyAuth'] = 'Bearer'
 
 # Enter a context with an instance of the API client
 with dripdrop.ApiClient(configuration) as api_client:
@@ -456,11 +390,11 @@ with dripdrop.ApiClient(configuration) as api_client:
 
     try:
         # Update a custom field definition
-        api_response = api_instance.update(uuid, custom_field_definition)
-        print("The response of CustomFieldsApi->update:\n")
+        api_response = api_instance.custom_fields_update(uuid, custom_field_definition)
+        print("The response of CustomFieldsApi->custom_fields_update:\n")
         pprint(api_response)
     except Exception as e:
-        print("Exception when calling CustomFieldsApi->update: %s\n" % e)
+        print("Exception when calling CustomFieldsApi->custom_fields_update: %s\n" % e)
 ```
 
 
@@ -479,7 +413,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[ApiKeyAuth](../README.md#ApiKeyAuth)
+No authorization required
 
 ### HTTP request headers
 
