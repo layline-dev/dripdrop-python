@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictBool
 from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
 from uuid import UUID
@@ -33,7 +33,8 @@ class EmailAddress(BaseModel):
     created: datetime
     modified: datetime
     email: Annotated[str, Field(strict=True, max_length=254)]
-    __properties: ClassVar[List[str]] = ["uuid", "created", "modified", "email"]
+    email_opted_out: StrictBool
+    __properties: ClassVar[List[str]] = ["uuid", "created", "modified", "email", "email_opted_out"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -68,11 +69,13 @@ class EmailAddress(BaseModel):
         * OpenAPI `readOnly` fields are excluded.
         * OpenAPI `readOnly` fields are excluded.
         * OpenAPI `readOnly` fields are excluded.
+        * OpenAPI `readOnly` fields are excluded.
         """
         excluded_fields: Set[str] = set([
             "uuid",
             "created",
             "modified",
+            "email_opted_out",
         ])
 
         _dict = self.model_dump(
@@ -95,7 +98,8 @@ class EmailAddress(BaseModel):
             "uuid": obj.get("uuid"),
             "created": obj.get("created"),
             "modified": obj.get("modified"),
-            "email": obj.get("email")
+            "email": obj.get("email"),
+            "email_opted_out": obj.get("email_opted_out")
         })
         return _obj
 

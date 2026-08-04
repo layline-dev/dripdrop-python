@@ -19,7 +19,7 @@ import json
 
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from uuid import UUID
 from dripdrop.models.flow_enrollment_statuses_enum import FlowEnrollmentStatusesEnum
 from typing import Optional, Set
@@ -27,7 +27,7 @@ from typing_extensions import Self
 
 class PublicFlowEnrollment(BaseModel):
     """
-    PublicFlowEnrollment
+    Serializer mixin that adds custom field support to any model serializer.  The target model must have a `custom_data` JSONField.  Usage:     class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):         class Meta:             model = Contact             fields = [..., \"custom_fields\"]  Read response format:     \"custom_fields\": {         \"<field_uuid>\": {             \"value\": <the_value>,             \"name\": \"Company\",             \"field_type\": \"char\",             \"required\": false         }     }  Write request format:     \"custom_fields\": {         \"<field_uuid>\": <value>     }
     """ # noqa: E501
     uuid: UUID
     created: datetime
@@ -35,7 +35,8 @@ class PublicFlowEnrollment(BaseModel):
     status: FlowEnrollmentStatusesEnum
     flow_uuid: UUID
     contact_uuid: UUID
-    __properties: ClassVar[List[str]] = ["uuid", "created", "modified", "status", "flow_uuid", "contact_uuid"]
+    custom_fields: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["uuid", "created", "modified", "status", "flow_uuid", "contact_uuid", "custom_fields"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -101,7 +102,8 @@ class PublicFlowEnrollment(BaseModel):
             "modified": obj.get("modified"),
             "status": obj.get("status"),
             "flow_uuid": obj.get("flow_uuid"),
-            "contact_uuid": obj.get("contact_uuid")
+            "contact_uuid": obj.get("contact_uuid"),
+            "custom_fields": obj.get("custom_fields")
         })
         return _obj
 

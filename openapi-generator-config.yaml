@@ -13,6 +13,6 @@ operationIdNameMappings:
 additionalProperties:
   packageName: dripdrop
   projectName: dripdrop
-  packageVersion: 0.1.0
+  packageVersion: 0.1.1
   packageUrl: https://github.com/layline-dev/dripdrop-python
   removeOperationIdPrefix: true

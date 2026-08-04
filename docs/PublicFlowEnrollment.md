@@ -1,5 +1,6 @@
 # PublicFlowEnrollment
 
+Serializer mixin that adds custom field support to any model serializer.  The target model must have a `custom_data` JSONField.  Usage:     class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):         class Meta:             model = Contact             fields = [..., \"custom_fields\"]  Read response format:     \"custom_fields\": {         \"<field_uuid>\": {             \"value\": <the_value>,             \"name\": \"Company\",             \"field_type\": \"char\",             \"required\": false         }     }  Write request format:     \"custom_fields\": {         \"<field_uuid>\": <value>     }
 
 ## Properties
 
@@ -11,6 +12,7 @@ Name | Type | Description | Notes
 **status** | [**FlowEnrollmentStatusesEnum**](FlowEnrollmentStatusesEnum.md) |  | [readonly] 
 **flow_uuid** | **UUID** |  | 
 **contact_uuid** | **UUID** |  | 
+**custom_fields** | **Dict[str, object]** |  | [optional] 
 
 ## Example
 

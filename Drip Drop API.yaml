@@ -67,6 +67,7 @@ paths:
           - hi
           - hr
           - hsb
+          - ht
           - hu
           - hy
           - ia
@@ -326,6 +327,121 @@ paths:
       responses:
         '204':
           description: No response body
+  /v1/contacts/bulk/:
+    post:
+      operationId: contacts_bulk_create
+      description: |-
+        Create up to 500 contacts in one request. Validation is all-or-nothing: if any contact fails validation, nothing is created and the errors identify each failing contact by its index.
+
+        Duplicate handling follows your account's dedupe strategy and the `on_duplicate` flag:
+        - `error` (default): if any row matches an existing contact or an earlier row in the same request, nothing is created and a 409 lists the conflicting rows.
+        - `skip`: the non-duplicate rows are created and the duplicates are reported in `skipped`.
+
+        Only rows that will actually be created are counted against your plan's contact quota.
+      summary: Bulk create contacts
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicContactBulkCreateRequest'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactBulkCreateResponse'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactBulkCreateConflict'
+          description: ''
+  /v1/contacts/duplicates/:
+    get:
+      operationId: contacts_duplicates_list
+      description: Report of contacts that already share a dedupe key (email / phone),
+        grouped into clusters, scanned by your account's dedupe strategy. When the
+        strategy is `none` it falls back to email+phone so the report is still useful
+        for cleanup.
+      summary: List duplicate contact clusters
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - contacts
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDuplicateClusterList'
+          description: ''
+    post:
+      operationId: contacts_duplicates_create
+      description: 'Dry run: given a list of contacts, report per-row whether each
+        would be created or skipped as a duplicate under your account''s dedupe strategy
+        — against both existing contacts and the other rows in the request. Nothing
+        is created.'
+      summary: Preview duplicates for incoming contacts
+      tags:
+      - contacts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicContactDuplicatePreviewResponse'
+          description: ''
   /v1/custom-fields/:
     get:
       operationId: custom_fields_list
@@ -506,9 +622,20 @@ paths:
   /v1/enrollments/:
     get:
       operationId: enrollments_list
-      description: Retrieve all flow enrollments for your account.
+      description: Retrieve all flow enrollments for your account. Optionally filter
+        by flow and/or contact to look up an existing enrollment.
       summary: List enrollments
       parameters:
+      - in: query
+        name: contact_uuid
+        schema:
+          type: string
+        description: Only return enrollments for this contact.
+      - in: query
+        name: flow_uuid
+        schema:
+          type: string
+        description: Only return enrollments in this flow.
       - name: ordering
         required: false
         in: query
@@ -566,6 +693,75 @@ paths:
                 $ref: '#/components/schemas/PublicFlowEnrollment'
           description: ''
   /v1/enrollments/{uuid}/:
+    put:
+      operationId: enrollments_update
+      description: Update an enrollment's custom fields. The flow and contact an enrollment
+        belongs to cannot be changed.
+      summary: Update an enrollment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlowEnrollment'
+          description: ''
+    patch:
+      operationId: enrollments_partial_update
+      description: Update specific custom fields on an enrollment. Values are merged
+        into the existing custom field data.
+      summary: Patch an enrollment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlowEnrollment'
+          description: ''
     delete:
       operationId: enrollments_destroy
       description: Remove a contact from a flow by enrollment UUID.
@@ -682,6 +878,8 @@ paths:
           description: Validation error
         '404':
           description: Flow not found
+        '429':
+          description: Contact limit for your plan has been reached
         '409':
           content:
             application/json:
@@ -771,6 +969,20 @@ components:
         custom_fields:
           type: object
           additionalProperties: {}
+        enrollment_custom_fields:
+          type: object
+          additionalProperties: {}
+          description: Custom field values for the enrollment this call creates, keyed
+            by field UUID or key. The definitions must target flows.flowenrollment;
+            `custom_fields` targets the contact.
+        on_match:
+          nullable: true
+          description: |-
+            Set to 'create' to create a new contact even when one already matches the account's dedupe strategy. Omit to return 409 on a match (default).
+
+            * `create` - create
+          allOf:
+          - $ref: '#/components/schemas/OnMatchEnum'
       required:
       - first_name
     CreateContactAndEnrollSuccess:
@@ -847,6 +1059,46 @@ components:
       - target_model
       - target_model_display
       - uuid
+    DuplicateCluster:
+      type: object
+      description: |-
+        Serializes a dedup.DuplicateCluster (key + the contacts sharing it) for
+        the duplicate report and the setting-change guard's blocked payload.
+      properties:
+        key_type:
+          type: string
+        key_value:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateClusterContact'
+          readOnly: true
+      required:
+      - contacts
+      - key_type
+      - key_value
+    DuplicateClusterContact:
+      type: object
+      description: One contact inside a duplicate cluster (report + guard payload).
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+      required:
+      - email
+      - name
+      - phone
+      - uuid
     EmailAddress:
       type: object
       properties:
@@ -866,9 +1118,13 @@ components:
           type: string
           format: email
           maxLength: 254
+        email_opted_out:
+          type: boolean
+          readOnly: true
       required:
       - created
       - email
+      - email_opted_out
       - modified
       - uuid
     FieldTypeEnum:
@@ -929,6 +1185,55 @@ components:
         * `3` - Paused
         * `4` - Complete
         * `5` - Archived
+    ImportResolution:
+      type: object
+      description: Per-row dedupe outcome in the import dry-run preview (aligned by
+        row).
+      properties:
+        outcome:
+          $ref: '#/components/schemas/OutcomeEnum'
+        matched_by:
+          type: string
+          nullable: true
+        matched_contact_uuid:
+          type: string
+          format: uuid
+          nullable: true
+        is_ambiguous:
+          type: boolean
+        notes:
+          type: array
+          items:
+            type: string
+      required:
+      - is_ambiguous
+      - matched_by
+      - matched_contact_uuid
+      - notes
+      - outcome
+    OnDuplicateEnum:
+      enum:
+      - error
+      - skip
+      type: string
+      description: |-
+        * `error` - error
+        * `skip` - skip
+    OnMatchEnum:
+      enum:
+      - create
+      type: string
+      description: '* `create` - create'
+    OutcomeEnum:
+      enum:
+      - will_create
+      - will_update
+      - will_skip
+      type: string
+      description: |-
+        * `will_create` - will_create
+        * `will_update` - will_update
+        * `will_skip` - will_skip
     PaginatedContactList:
       type: object
       required:
@@ -975,6 +1280,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomFieldDefinition'
+    PaginatedDuplicateClusterList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateCluster'
     PaginatedPublicFlowEnrollmentList:
       type: object
       required:
@@ -1119,22 +1447,127 @@ components:
         is_in_use:
           type: boolean
           readOnly: true
+    PatchedPublicFlowEnrollment:
+      type: object
+      description: |-
+        Serializer mixin that adds custom field support to any model serializer.
+
+        The target model must have a `custom_data` JSONField.
+
+        Usage:
+            class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):
+                class Meta:
+                    model = Contact
+                    fields = [..., "custom_fields"]
+
+        Read response format:
+            "custom_fields": {
+                "<field_uuid>": {
+                    "value": <the_value>,
+                    "name": "Company",
+                    "field_type": "char",
+                    "required": false
+                }
+            }
+
+        Write request format:
+            "custom_fields": {
+                "<field_uuid>": <value>
+            }
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/FlowEnrollmentStatusesEnum'
+          readOnly: true
+        flow_uuid:
+          type: string
+          format: uuid
+        contact_uuid:
+          type: string
+          format: uuid
+        custom_fields:
+          type: object
+          additionalProperties: {}
     PhoneNumber:
       type: object
       properties:
         number:
           type: string
           maxLength: 128
-        object_id:
-          type: integer
-          maximum: 2147483647
-          minimum: 0
-          nullable: true
-        content_type:
-          type: integer
-          nullable: true
+        sms_opted_out:
+          type: boolean
+          readOnly: true
       required:
       - number
+      - sms_opted_out
+    PublicContactBulkCreateConflict:
+      type: object
+      properties:
+        error:
+          type: string
+        conflicts:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - conflicts
+      - error
+    PublicContactBulkCreateRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        on_duplicate:
+          $ref: '#/components/schemas/OnDuplicateEnum'
+      required:
+      - contacts
+    PublicContactBulkCreateResponse:
+      type: object
+      properties:
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        skipped:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - created
+    PublicContactDuplicatePreviewRequest:
+      type: object
+      properties:
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+      required:
+      - contacts
+    PublicContactDuplicatePreviewResponse:
+      type: object
+      properties:
+        resolutions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportResolution'
+      required:
+      - resolutions
     PublicFlow:
       type: object
       properties:
@@ -1165,6 +1598,31 @@ components:
       - uuid
     PublicFlowEnrollment:
       type: object
+      description: |-
+        Serializer mixin that adds custom field support to any model serializer.
+
+        The target model must have a `custom_data` JSONField.
+
+        Usage:
+            class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):
+                class Meta:
+                    model = Contact
+                    fields = [..., "custom_fields"]
+
+        Read response format:
+            "custom_fields": {
+                "<field_uuid>": {
+                    "value": <the_value>,
+                    "name": "Company",
+                    "field_type": "char",
+                    "required": false
+                }
+            }
+
+        Write request format:
+            "custom_fields": {
+                "<field_uuid>": <value>
+            }
       properties:
         uuid:
           type: string
@@ -1188,6 +1646,9 @@ components:
         contact_uuid:
           type: string
           format: uuid
+        custom_fields:
+          type: object
+          additionalProperties: {}
       required:
       - contact_uuid
       - created
@@ -1195,14 +1656,6 @@ components:
       - modified
       - status
       - uuid
-    CurrentPassword:
-      type: object
-      properties:
-        current_password:
-          type: string
-          writeOnly: true
-      required:
-      - current_password
   securitySchemes:
     ApiKeyAuth:
       type: apiKey

@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt
-from typing import Any, ClassVar, Dict, List, Optional
+from pydantic import BaseModel, ConfigDict, Field, StrictBool
+from typing import Any, ClassVar, Dict, List
 from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,9 +28,8 @@ class PhoneNumber(BaseModel):
     PhoneNumber
     """ # noqa: E501
     number: Annotated[str, Field(strict=True, max_length=128)]
-    object_id: Optional[Annotated[int, Field(le=2147483647, strict=True, ge=0)]] = None
-    content_type: Optional[StrictInt] = None
-    __properties: ClassVar[List[str]] = ["number", "object_id", "content_type"]
+    sms_opted_out: StrictBool
+    __properties: ClassVar[List[str]] = ["number", "sms_opted_out"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -62,8 +61,10 @@ class PhoneNumber(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * OpenAPI `readOnly` fields are excluded.
         """
         excluded_fields: Set[str] = set([
+            "sms_opted_out",
         ])
 
         _dict = self.model_dump(
@@ -71,16 +72,6 @@ class PhoneNumber(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # set to None if object_id (nullable) is None
-        # and model_fields_set contains the field
-        if self.object_id is None and "object_id" in self.model_fields_set:
-            _dict['object_id'] = None
-
-        # set to None if content_type (nullable) is None
-        # and model_fields_set contains the field
-        if self.content_type is None and "content_type" in self.model_fields_set:
-            _dict['content_type'] = None
-
         return _dict
 
     @classmethod
@@ -94,8 +85,7 @@ class PhoneNumber(BaseModel):
 
         _obj = cls.model_validate({
             "number": obj.get("number"),
-            "object_id": obj.get("object_id"),
-            "content_type": obj.get("content_type")
+            "sms_opted_out": obj.get("sms_opted_out")
         })
         return _obj
 

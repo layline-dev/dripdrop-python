@@ -20,6 +20,7 @@ import json
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
+from dripdrop.models.on_match_enum import OnMatchEnum
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -32,7 +33,9 @@ class CreateContactAndEnroll(BaseModel):
     email: Optional[StrictStr] = None
     phone: Optional[Annotated[str, Field(strict=True, max_length=20)]] = None
     custom_fields: Optional[Dict[str, Any]] = None
-    __properties: ClassVar[List[str]] = ["first_name", "last_name", "email", "phone", "custom_fields"]
+    enrollment_custom_fields: Optional[Dict[str, Any]] = Field(default=None, description="Custom field values for the enrollment this call creates, keyed by field UUID or key. The definitions must target flows.flowenrollment; `custom_fields` targets the contact.")
+    on_match: Optional[OnMatchEnum] = Field(default=None, description="Set to 'create' to create a new contact even when one already matches the account's dedupe strategy. Omit to return 409 on a match (default).  * `create` - create")
+    __properties: ClassVar[List[str]] = ["first_name", "last_name", "email", "phone", "custom_fields", "enrollment_custom_fields", "on_match"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,6 +86,11 @@ class CreateContactAndEnroll(BaseModel):
         if self.phone is None and "phone" in self.model_fields_set:
             _dict['phone'] = None
 
+        # set to None if on_match (nullable) is None
+        # and model_fields_set contains the field
+        if self.on_match is None and "on_match" in self.model_fields_set:
+            _dict['on_match'] = None
+
         return _dict
 
     @classmethod
@@ -99,7 +107,9 @@ class CreateContactAndEnroll(BaseModel):
             "last_name": obj.get("last_name"),
             "email": obj.get("email"),
             "phone": obj.get("phone"),
-            "custom_fields": obj.get("custom_fields")
+            "custom_fields": obj.get("custom_fields"),
+            "enrollment_custom_fields": obj.get("enrollment_custom_fields"),
+            "on_match": obj.get("on_match")
         })
         return _obj
 

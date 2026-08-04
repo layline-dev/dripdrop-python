@@ -1,6 +1,6 @@
 [project]
 name = "dripdrop"
-version = "0.1.0"
+version = "0.1.1"
 description = "Drip Drop API"
 authors = [
   {name = "OpenAPI Generator Community",email = "team@openapitools.org"},

@@ -14,7 +14,7 @@
 """  # noqa: E501
 
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 # Define package exports
 __all__ = [
@@ -36,19 +36,31 @@ __all__ = [
     "ContactAlreadyExists",
     "CreateContactAndEnroll",
     "CreateContactAndEnrollSuccess",
-    "CurrentPassword",
     "CustomFieldDefinition",
+    "DuplicateCluster",
+    "DuplicateClusterContact",
     "EmailAddress",
     "FieldTypeEnum",
     "FlowEnrollmentStatusesEnum",
     "FlowStatusEnum",
+    "ImportResolution",
+    "OnDuplicateEnum",
+    "OnMatchEnum",
+    "OutcomeEnum",
     "PaginatedContactList",
     "PaginatedCustomFieldDefinitionList",
+    "PaginatedDuplicateClusterList",
     "PaginatedPublicFlowEnrollmentList",
     "PaginatedPublicFlowList",
     "PatchedContact",
     "PatchedCustomFieldDefinition",
+    "PatchedPublicFlowEnrollment",
     "PhoneNumber",
+    "PublicContactBulkCreateConflict",
+    "PublicContactBulkCreateRequest",
+    "PublicContactBulkCreateResponse",
+    "PublicContactDuplicatePreviewRequest",
+    "PublicContactDuplicatePreviewResponse",
     "PublicFlow",
     "PublicFlowEnrollment",
 ]
@@ -76,19 +88,31 @@ from dripdrop.models.contact import Contact as Contact
 from dripdrop.models.contact_already_exists import ContactAlreadyExists as ContactAlreadyExists
 from dripdrop.models.create_contact_and_enroll import CreateContactAndEnroll as CreateContactAndEnroll
 from dripdrop.models.create_contact_and_enroll_success import CreateContactAndEnrollSuccess as CreateContactAndEnrollSuccess
-from dripdrop.models.current_password import CurrentPassword as CurrentPassword
 from dripdrop.models.custom_field_definition import CustomFieldDefinition as CustomFieldDefinition
+from dripdrop.models.duplicate_cluster import DuplicateCluster as DuplicateCluster
+from dripdrop.models.duplicate_cluster_contact import DuplicateClusterContact as DuplicateClusterContact
 from dripdrop.models.email_address import EmailAddress as EmailAddress
 from dripdrop.models.field_type_enum import FieldTypeEnum as FieldTypeEnum
 from dripdrop.models.flow_enrollment_statuses_enum import FlowEnrollmentStatusesEnum as FlowEnrollmentStatusesEnum
 from dripdrop.models.flow_status_enum import FlowStatusEnum as FlowStatusEnum
+from dripdrop.models.import_resolution import ImportResolution as ImportResolution
+from dripdrop.models.on_duplicate_enum import OnDuplicateEnum as OnDuplicateEnum
+from dripdrop.models.on_match_enum import OnMatchEnum as OnMatchEnum
+from dripdrop.models.outcome_enum import OutcomeEnum as OutcomeEnum
 from dripdrop.models.paginated_contact_list import PaginatedContactList as PaginatedContactList
 from dripdrop.models.paginated_custom_field_definition_list import PaginatedCustomFieldDefinitionList as PaginatedCustomFieldDefinitionList
+from dripdrop.models.paginated_duplicate_cluster_list import PaginatedDuplicateClusterList as PaginatedDuplicateClusterList
 from dripdrop.models.paginated_public_flow_enrollment_list import PaginatedPublicFlowEnrollmentList as PaginatedPublicFlowEnrollmentList
 from dripdrop.models.paginated_public_flow_list import PaginatedPublicFlowList as PaginatedPublicFlowList
 from dripdrop.models.patched_contact import PatchedContact as PatchedContact
 from dripdrop.models.patched_custom_field_definition import PatchedCustomFieldDefinition as PatchedCustomFieldDefinition
+from dripdrop.models.patched_public_flow_enrollment import PatchedPublicFlowEnrollment as PatchedPublicFlowEnrollment
 from dripdrop.models.phone_number import PhoneNumber as PhoneNumber
+from dripdrop.models.public_contact_bulk_create_conflict import PublicContactBulkCreateConflict as PublicContactBulkCreateConflict
+from dripdrop.models.public_contact_bulk_create_request import PublicContactBulkCreateRequest as PublicContactBulkCreateRequest
+from dripdrop.models.public_contact_bulk_create_response import PublicContactBulkCreateResponse as PublicContactBulkCreateResponse
+from dripdrop.models.public_contact_duplicate_preview_request import PublicContactDuplicatePreviewRequest as PublicContactDuplicatePreviewRequest
+from dripdrop.models.public_contact_duplicate_preview_response import PublicContactDuplicatePreviewResponse as PublicContactDuplicatePreviewResponse
 from dripdrop.models.public_flow import PublicFlow as PublicFlow
 from dripdrop.models.public_flow_enrollment import PublicFlowEnrollment as PublicFlowEnrollment
 

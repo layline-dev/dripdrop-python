@@ -103,6 +103,7 @@ class FlowsApi:
             '201': "CreateContactAndEnrollSuccess",
             '400': None,
             '404': None,
+            '429': None,
             '409': "ContactAlreadyExists",
         }
         response_data = self.api_client.call_api(
@@ -177,6 +178,7 @@ class FlowsApi:
             '201': "CreateContactAndEnrollSuccess",
             '400': None,
             '404': None,
+            '429': None,
             '409': "ContactAlreadyExists",
         }
         response_data = self.api_client.call_api(
@@ -251,6 +253,7 @@ class FlowsApi:
             '201': "CreateContactAndEnrollSuccess",
             '400': None,
             '404': None,
+            '429': None,
             '409': "ContactAlreadyExists",
         }
         response_data = self.api_client.call_api(

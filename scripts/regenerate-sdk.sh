@@ -19,6 +19,18 @@ if [[ ! -f "$CONFIG_FILE" ]]; then
   exit 1
 fi
 
+# Guard against a lossy schema export. If the upstream schema is generated
+# without the public API's custom settings (auth scheme + servers), the SDK
+# silently loses X-API-Key auth and its default host — every call then 401s or
+# hits localhost. Fail loudly here rather than shipping a broken client.
+for required in "securitySchemes" "servers:"; do
+  if ! grep -q "$required" "$SCHEMA_FILE"; then
+    echo "Schema '$SCHEMA_FILE' is missing '$required' — refusing to generate." >&2
+    echo "The upstream export likely dropped the public API custom settings." >&2
+    exit 1
+  fi
+done
+
 run_generator() {
   if command -v openapi-generator-cli >/dev/null 2>&1; then
     openapi-generator-cli version | grep -Fx "$GENERATOR_VERSION" >/dev/null || {

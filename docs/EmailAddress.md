@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **created** | **datetime** |  | [readonly] 
 **modified** | **datetime** |  | [readonly] 
 **email** | **str** |  | 
+**email_opted_out** | **bool** |  | [readonly] 
 
 ## Example
 

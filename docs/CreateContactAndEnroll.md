@@ -10,6 +10,8 @@ Name | Type | Description | Notes
 **email** | **str** |  | [optional] 
 **phone** | **str** |  | [optional] 
 **custom_fields** | **Dict[str, object]** |  | [optional] 
+**enrollment_custom_fields** | **Dict[str, object]** | Custom field values for the enrollment this call creates, keyed by field UUID or key. The definitions must target flows.flowenrollment; &#x60;custom_fields&#x60; targets the contact. | [optional] 
+**on_match** | [**OnMatchEnum**](OnMatchEnum.md) | Set to &#39;create&#39; to create a new contact even when one already matches the account&#39;s dedupe strategy. Omit to return 409 on a match (default).  * &#x60;create&#x60; - create | [optional] 
 
 ## Example
 

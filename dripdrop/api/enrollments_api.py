@@ -20,6 +20,7 @@ from typing import Optional
 from typing_extensions import Annotated
 from uuid import UUID
 from dripdrop.models.paginated_public_flow_enrollment_list import PaginatedPublicFlowEnrollmentList
+from dripdrop.models.patched_public_flow_enrollment import PatchedPublicFlowEnrollment
 from dripdrop.models.public_flow_enrollment import PublicFlowEnrollment
 
 from dripdrop.api_client import ApiClient, RequestSerialized
@@ -573,6 +574,8 @@ class EnrollmentsApi:
     @validate_call
     def list(
         self,
+        contact_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments for this contact.")] = None,
+        flow_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments in this flow.")] = None,
         ordering: Annotated[Optional[StrictStr], Field(description="Which field to use when ordering the results.")] = None,
         page: Annotated[Optional[StrictInt], Field(description="A page number within the paginated result set.")] = None,
         page_size: Annotated[Optional[StrictInt], Field(description="Number of results to return per page.")] = None,
@@ -591,8 +594,12 @@ class EnrollmentsApi:
     ) -> PaginatedPublicFlowEnrollmentList:
         """List enrollments
 
-        Retrieve all flow enrollments for your account.
+        Retrieve all flow enrollments for your account. Optionally filter by flow and/or contact to look up an existing enrollment.
 
+        :param contact_uuid: Only return enrollments for this contact.
+        :type contact_uuid: str
+        :param flow_uuid: Only return enrollments in this flow.
+        :type flow_uuid: str
         :param ordering: Which field to use when ordering the results.
         :type ordering: str
         :param page: A page number within the paginated result set.
@@ -622,6 +629,8 @@ class EnrollmentsApi:
         """ # noqa: E501
 
         _param = self._list_serialize(
+            contact_uuid=contact_uuid,
+            flow_uuid=flow_uuid,
             ordering=ordering,
             page=page,
             page_size=page_size,
@@ -648,6 +657,8 @@ class EnrollmentsApi:
     @validate_call
     def list_with_http_info(
         self,
+        contact_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments for this contact.")] = None,
+        flow_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments in this flow.")] = None,
         ordering: Annotated[Optional[StrictStr], Field(description="Which field to use when ordering the results.")] = None,
         page: Annotated[Optional[StrictInt], Field(description="A page number within the paginated result set.")] = None,
         page_size: Annotated[Optional[StrictInt], Field(description="Number of results to return per page.")] = None,
@@ -666,8 +677,12 @@ class EnrollmentsApi:
     ) -> ApiResponse[PaginatedPublicFlowEnrollmentList]:
         """List enrollments
 
-        Retrieve all flow enrollments for your account.
+        Retrieve all flow enrollments for your account. Optionally filter by flow and/or contact to look up an existing enrollment.
 
+        :param contact_uuid: Only return enrollments for this contact.
+        :type contact_uuid: str
+        :param flow_uuid: Only return enrollments in this flow.
+        :type flow_uuid: str
         :param ordering: Which field to use when ordering the results.
         :type ordering: str
         :param page: A page number within the paginated result set.
@@ -697,6 +712,8 @@ class EnrollmentsApi:
         """ # noqa: E501
 
         _param = self._list_serialize(
+            contact_uuid=contact_uuid,
+            flow_uuid=flow_uuid,
             ordering=ordering,
             page=page,
             page_size=page_size,
@@ -723,6 +740,8 @@ class EnrollmentsApi:
     @validate_call
     def list_without_preload_content(
         self,
+        contact_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments for this contact.")] = None,
+        flow_uuid: Annotated[Optional[StrictStr], Field(description="Only return enrollments in this flow.")] = None,
         ordering: Annotated[Optional[StrictStr], Field(description="Which field to use when ordering the results.")] = None,
         page: Annotated[Optional[StrictInt], Field(description="A page number within the paginated result set.")] = None,
         page_size: Annotated[Optional[StrictInt], Field(description="Number of results to return per page.")] = None,
@@ -741,8 +760,12 @@ class EnrollmentsApi:
     ) -> RESTResponseType:
         """List enrollments
 
-        Retrieve all flow enrollments for your account.
+        Retrieve all flow enrollments for your account. Optionally filter by flow and/or contact to look up an existing enrollment.
 
+        :param contact_uuid: Only return enrollments for this contact.
+        :type contact_uuid: str
+        :param flow_uuid: Only return enrollments in this flow.
+        :type flow_uuid: str
         :param ordering: Which field to use when ordering the results.
         :type ordering: str
         :param page: A page number within the paginated result set.
@@ -772,6 +795,8 @@ class EnrollmentsApi:
         """ # noqa: E501
 
         _param = self._list_serialize(
+            contact_uuid=contact_uuid,
+            flow_uuid=flow_uuid,
             ordering=ordering,
             page=page,
             page_size=page_size,
@@ -793,6 +818,8 @@ class EnrollmentsApi:
 
     def _list_serialize(
         self,
+        contact_uuid,
+        flow_uuid,
         ordering,
         page,
         page_size,
@@ -818,6 +845,14 @@ class EnrollmentsApi:
 
         # process the path parameters
         # process the query parameters
+        if contact_uuid is not None:
+            
+            _query_params.append(('contact_uuid', contact_uuid))
+            
+        if flow_uuid is not None:
+            
+            _query_params.append(('flow_uuid', flow_uuid))
+            
         if ordering is not None:
             
             _query_params.append(('ordering', ordering))
@@ -852,6 +887,588 @@ class EnrollmentsApi:
         return self.api_client.param_serialize(
             method='GET',
             resource_path='/v1/enrollments/',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def partial_update(
+        self,
+        uuid: UUID,
+        patched_public_flow_enrollment: Optional[PatchedPublicFlowEnrollment] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PublicFlowEnrollment:
+        """Patch an enrollment
+
+        Update specific custom fields on an enrollment. Values are merged into the existing custom field data.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param patched_public_flow_enrollment:
+        :type patched_public_flow_enrollment: PatchedPublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._partial_update_serialize(
+            uuid=uuid,
+            patched_public_flow_enrollment=patched_public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def partial_update_with_http_info(
+        self,
+        uuid: UUID,
+        patched_public_flow_enrollment: Optional[PatchedPublicFlowEnrollment] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PublicFlowEnrollment]:
+        """Patch an enrollment
+
+        Update specific custom fields on an enrollment. Values are merged into the existing custom field data.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param patched_public_flow_enrollment:
+        :type patched_public_flow_enrollment: PatchedPublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._partial_update_serialize(
+            uuid=uuid,
+            patched_public_flow_enrollment=patched_public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def partial_update_without_preload_content(
+        self,
+        uuid: UUID,
+        patched_public_flow_enrollment: Optional[PatchedPublicFlowEnrollment] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Patch an enrollment
+
+        Update specific custom fields on an enrollment. Values are merged into the existing custom field data.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param patched_public_flow_enrollment:
+        :type patched_public_flow_enrollment: PatchedPublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._partial_update_serialize(
+            uuid=uuid,
+            patched_public_flow_enrollment=patched_public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _partial_update_serialize(
+        self,
+        uuid,
+        patched_public_flow_enrollment,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if uuid is not None:
+            _path_params['uuid'] = uuid
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if patched_public_flow_enrollment is not None:
+            _body_params = patched_public_flow_enrollment
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json', 
+                        'application/x-www-form-urlencoded', 
+                        'multipart/form-data'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+            'ApiKeyAuth'
+        ]
+
+        return self.api_client.param_serialize(
+            method='PATCH',
+            resource_path='/v1/enrollments/{uuid}/',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def update(
+        self,
+        uuid: UUID,
+        public_flow_enrollment: PublicFlowEnrollment,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> PublicFlowEnrollment:
+        """Update an enrollment
+
+        Update an enrollment's custom fields. The flow and contact an enrollment belongs to cannot be changed.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param public_flow_enrollment: (required)
+        :type public_flow_enrollment: PublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._update_serialize(
+            uuid=uuid,
+            public_flow_enrollment=public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def update_with_http_info(
+        self,
+        uuid: UUID,
+        public_flow_enrollment: PublicFlowEnrollment,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[PublicFlowEnrollment]:
+        """Update an enrollment
+
+        Update an enrollment's custom fields. The flow and contact an enrollment belongs to cannot be changed.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param public_flow_enrollment: (required)
+        :type public_flow_enrollment: PublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._update_serialize(
+            uuid=uuid,
+            public_flow_enrollment=public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def update_without_preload_content(
+        self,
+        uuid: UUID,
+        public_flow_enrollment: PublicFlowEnrollment,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Update an enrollment
+
+        Update an enrollment's custom fields. The flow and contact an enrollment belongs to cannot be changed.
+
+        :param uuid: (required)
+        :type uuid: UUID
+        :param public_flow_enrollment: (required)
+        :type public_flow_enrollment: PublicFlowEnrollment
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._update_serialize(
+            uuid=uuid,
+            public_flow_enrollment=public_flow_enrollment,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "PublicFlowEnrollment",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _update_serialize(
+        self,
+        uuid,
+        public_flow_enrollment,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if uuid is not None:
+            _path_params['uuid'] = uuid
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if public_flow_enrollment is not None:
+            _body_params = public_flow_enrollment
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json', 
+                        'application/x-www-form-urlencoded', 
+                        'multipart/form-data'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+            'ApiKeyAuth'
+        ]
+
+        return self.api_client.param_serialize(
+            method='PUT',
+            resource_path='/v1/enrollments/{uuid}/',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
