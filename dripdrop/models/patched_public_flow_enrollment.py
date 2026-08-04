@@ -17,21 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List, Optional
-from dripdrop.models.public_flow import PublicFlow
+from uuid import UUID
+from dripdrop.models.flow_enrollment_statuses_enum import FlowEnrollmentStatusesEnum
 from typing import Optional, Set
 from typing_extensions import Self
 
-class PaginatedPublicFlowList(BaseModel):
+class PatchedPublicFlowEnrollment(BaseModel):
     """
-    PaginatedPublicFlowList
+    Serializer mixin that adds custom field support to any model serializer.  The target model must have a `custom_data` JSONField.  Usage:     class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):         class Meta:             model = Contact             fields = [..., \"custom_fields\"]  Read response format:     \"custom_fields\": {         \"<field_uuid>\": {             \"value\": <the_value>,             \"name\": \"Company\",             \"field_type\": \"char\",             \"required\": false         }     }  Write request format:     \"custom_fields\": {         \"<field_uuid>\": <value>     }
     """ # noqa: E501
-    count: StrictInt
-    next: Optional[StrictStr] = None
-    previous: Optional[StrictStr] = None
-    results: List[PublicFlow]
-    __properties: ClassVar[List[str]] = ["count", "next", "previous", "results"]
+    uuid: Optional[UUID] = None
+    created: Optional[datetime] = None
+    modified: Optional[datetime] = None
+    status: Optional[FlowEnrollmentStatusesEnum] = None
+    flow_uuid: Optional[UUID] = None
+    contact_uuid: Optional[UUID] = None
+    custom_fields: Optional[Dict[str, Any]] = None
+    __properties: ClassVar[List[str]] = ["uuid", "created", "modified", "status", "flow_uuid", "contact_uuid", "custom_fields"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +56,7 @@ class PaginatedPublicFlowList(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of PaginatedPublicFlowList from a JSON string"""
+        """Create an instance of PatchedPublicFlowEnrollment from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -63,8 +68,16 @@ class PaginatedPublicFlowList(BaseModel):
         * `None` is only added to the output dict for nullable fields that
           were set at model initialization. Other fields with value `None`
           are ignored.
+        * OpenAPI `readOnly` fields are excluded.
+        * OpenAPI `readOnly` fields are excluded.
+        * OpenAPI `readOnly` fields are excluded.
+        * OpenAPI `readOnly` fields are excluded.
         """
         excluded_fields: Set[str] = set([
+            "uuid",
+            "created",
+            "modified",
+            "status",
         ])
 
         _dict = self.model_dump(
@@ -72,28 +85,11 @@ class PaginatedPublicFlowList(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in results (list)
-        _items = []
-        if self.results:
-            for _item_results in self.results:
-                if _item_results:
-                    _items.append(_item_results.to_dict())
-            _dict['results'] = _items
-        # set to None if next (nullable) is None
-        # and model_fields_set contains the field
-        if self.next is None and "next" in self.model_fields_set:
-            _dict['next'] = None
-
-        # set to None if previous (nullable) is None
-        # and model_fields_set contains the field
-        if self.previous is None and "previous" in self.model_fields_set:
-            _dict['previous'] = None
-
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of PaginatedPublicFlowList from a dict"""
+        """Create an instance of PatchedPublicFlowEnrollment from a dict"""
         if obj is None:
             return None
 
@@ -101,10 +97,13 @@ class PaginatedPublicFlowList(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "count": obj.get("count"),
-            "next": obj.get("next"),
-            "previous": obj.get("previous"),
-            "results": [PublicFlow.from_dict(_item) for _item in obj["results"]] if obj.get("results") is not None else None
+            "uuid": obj.get("uuid"),
+            "created": obj.get("created"),
+            "modified": obj.get("modified"),
+            "status": obj.get("status"),
+            "flow_uuid": obj.get("flow_uuid"),
+            "contact_uuid": obj.get("contact_uuid"),
+            "custom_fields": obj.get("custom_fields")
         })
         return _obj
 

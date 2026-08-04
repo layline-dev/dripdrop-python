@@ -2,7 +2,8 @@ openapi: 3.0.3
 info:
   title: Drip Drop API
   version: 1.0.0
-  description: Documentation of API endpoints of Drip Drop
+  description: API for integrations with Drip Drop.Authenticate by passing your API
+    key in the `X-API-Key` header.
 paths:
   /schema/:
     get:
@@ -128,6 +129,7 @@ paths:
       tags:
       - schema
       security:
+      - ApiKeyAuth: []
       - {}
       responses:
         '200':
@@ -151,7 +153,7 @@ paths:
           description: ''
   /v1/contacts/:
     get:
-      operationId: v1_contacts_list
+      operationId: contacts_list
       description: Retrieve a paginated list of contacts for your account.
       summary: List contacts
       parameters:
@@ -181,6 +183,8 @@ paths:
           type: string
       tags:
       - contacts
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -189,7 +193,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedContactList'
           description: ''
     post:
-      operationId: v1_contacts_create
+      operationId: contacts_create
       description: Create a new contact with optional email and phone number.
       summary: Create a contact
       tags:
@@ -206,6 +210,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Contact'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -215,7 +221,7 @@ paths:
           description: ''
   /v1/contacts/{uuid}/:
     get:
-      operationId: v1_contacts_retrieve
+      operationId: contacts_retrieve
       description: Retrieve a single contact by UUID.
       summary: Get a contact
       parameters:
@@ -227,6 +233,8 @@ paths:
         required: true
       tags:
       - contacts
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -235,7 +243,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     put:
-      operationId: v1_contacts_update
+      operationId: contacts_update
       description: Replace all fields on an existing contact.
       summary: Update a contact
       parameters:
@@ -259,6 +267,8 @@ paths:
             schema:
               $ref: '#/components/schemas/Contact'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -267,7 +277,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     patch:
-      operationId: v1_contacts_partial_update
+      operationId: contacts_partial_update
       description: Update specific fields on an existing contact.
       summary: Patch a contact
       parameters:
@@ -290,6 +300,8 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedContact'
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -298,7 +310,7 @@ paths:
                 $ref: '#/components/schemas/Contact'
           description: ''
     delete:
-      operationId: v1_contacts_destroy
+      operationId: contacts_destroy
       description: Permanently delete a contact.
       summary: Delete a contact
       parameters:
@@ -310,12 +322,14 @@ paths:
         required: true
       tags:
       - contacts
+      security:
+      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
   /v1/contacts/bulk/:
     post:
-      operationId: v1_contacts_bulk_create
+      operationId: contacts_bulk_create
       description: |-
         Create up to 500 contacts in one request. Validation is all-or-nothing: if any contact fails validation, nothing is created and the errors identify each failing contact by its index.
 
@@ -339,6 +353,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PublicContactBulkCreateRequest'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -354,7 +370,7 @@ paths:
           description: ''
   /v1/contacts/duplicates/:
     get:
-      operationId: v1_contacts_duplicates_list
+      operationId: contacts_duplicates_list
       description: Report of contacts that already share a dedupe key (email / phone),
         grouped into clusters, scanned by your account's dedupe strategy. When the
         strategy is `none` it falls back to email+phone so the report is still useful
@@ -387,6 +403,8 @@ paths:
           type: string
       tags:
       - contacts
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -395,7 +413,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedDuplicateClusterList'
           description: ''
     post:
-      operationId: v1_contacts_duplicates_create
+      operationId: contacts_duplicates_create
       description: 'Dry run: given a list of contacts, report per-row whether each
         would be created or skipped as a duplicate under your account''s dedupe strategy
         — against both existing contacts and the other rows in the request. Nothing
@@ -415,6 +433,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PublicContactDuplicatePreviewRequest'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -424,7 +444,7 @@ paths:
           description: ''
   /v1/custom-fields/:
     get:
-      operationId: v1_custom_fields_list
+      operationId: custom_fields_list
       description: Retrieve custom field definitions for your account. Optionally
         filter by target_model query parameter.
       summary: List custom field definitions
@@ -455,6 +475,8 @@ paths:
           type: string
       tags:
       - custom_fields
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -463,7 +485,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedCustomFieldDefinitionList'
           description: ''
     post:
-      operationId: v1_custom_fields_create
+      operationId: custom_fields_create
       description: Create a new custom field definition for a supported model.
       summary: Create a custom field definition
       tags:
@@ -480,6 +502,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomFieldDefinition'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -489,7 +513,7 @@ paths:
           description: ''
   /v1/custom-fields/{uuid}/:
     get:
-      operationId: v1_custom_fields_retrieve
+      operationId: custom_fields_retrieve
       description: Retrieve a single custom field definition by UUID.
       summary: Get a custom field definition
       parameters:
@@ -501,6 +525,8 @@ paths:
         required: true
       tags:
       - custom_fields
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -509,7 +535,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     put:
-      operationId: v1_custom_fields_update
+      operationId: custom_fields_update
       description: Replace all fields on an existing custom field definition.
       summary: Update a custom field definition
       parameters:
@@ -533,6 +559,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CustomFieldDefinition'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -541,7 +569,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     patch:
-      operationId: v1_custom_fields_partial_update
+      operationId: custom_fields_partial_update
       description: Update specific fields on an existing custom field definition.
       summary: Patch a custom field definition
       parameters:
@@ -564,6 +592,8 @@ paths:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/PatchedCustomFieldDefinition'
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -572,7 +602,7 @@ paths:
                 $ref: '#/components/schemas/CustomFieldDefinition'
           description: ''
     delete:
-      operationId: v1_custom_fields_destroy
+      operationId: custom_fields_destroy
       description: Permanently delete a custom field definition.
       summary: Delete a custom field definition
       parameters:
@@ -584,15 +614,28 @@ paths:
         required: true
       tags:
       - custom_fields
+      security:
+      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
   /v1/enrollments/:
     get:
-      operationId: v1_enrollments_list
-      description: Retrieve all flow enrollments for your account.
+      operationId: enrollments_list
+      description: Retrieve all flow enrollments for your account. Optionally filter
+        by flow and/or contact to look up an existing enrollment.
       summary: List enrollments
       parameters:
+      - in: query
+        name: contact_uuid
+        schema:
+          type: string
+        description: Only return enrollments for this contact.
+      - in: query
+        name: flow_uuid
+        schema:
+          type: string
+        description: Only return enrollments in this flow.
       - name: ordering
         required: false
         in: query
@@ -613,6 +656,8 @@ paths:
           type: integer
       tags:
       - enrollments
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -621,7 +666,7 @@ paths:
                 $ref: '#/components/schemas/PaginatedPublicFlowEnrollmentList'
           description: ''
     post:
-      operationId: v1_enrollments_create
+      operationId: enrollments_create
       description: Enroll a contact into a flow by providing flow_uuid and contact_uuid.
       summary: Enroll a contact
       tags:
@@ -638,6 +683,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PublicFlowEnrollment'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -646,8 +693,77 @@ paths:
                 $ref: '#/components/schemas/PublicFlowEnrollment'
           description: ''
   /v1/enrollments/{uuid}/:
+    put:
+      operationId: enrollments_update
+      description: Update an enrollment's custom fields. The flow and contact an enrollment
+        belongs to cannot be changed.
+      summary: Update an enrollment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicFlowEnrollment'
+        required: true
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlowEnrollment'
+          description: ''
+    patch:
+      operationId: enrollments_partial_update
+      description: Update specific custom fields on an enrollment. Values are merged
+        into the existing custom field data.
+      summary: Patch an enrollment
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - enrollments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPublicFlowEnrollment'
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFlowEnrollment'
+          description: ''
     delete:
-      operationId: v1_enrollments_destroy
+      operationId: enrollments_destroy
       description: Remove a contact from a flow by enrollment UUID.
       summary: Unenroll a contact
       parameters:
@@ -659,12 +775,14 @@ paths:
         required: true
       tags:
       - enrollments
+      security:
+      - ApiKeyAuth: []
       responses:
         '204':
           description: No response body
   /v1/flows/:
     get:
-      operationId: v1_flows_list
+      operationId: flows_list
       description: Retrieve all flows for your account.
       summary: List flows
       parameters:
@@ -688,6 +806,8 @@ paths:
           type: integer
       tags:
       - flows
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -697,7 +817,7 @@ paths:
           description: ''
   /v1/flows/{uuid}/:
     get:
-      operationId: v1_flows_retrieve
+      operationId: flows_retrieve
       description: Retrieve a single flow by UUID.
       summary: Get a flow
       parameters:
@@ -709,6 +829,8 @@ paths:
         required: true
       tags:
       - flows
+      security:
+      - ApiKeyAuth: []
       responses:
         '200':
           content:
@@ -718,7 +840,7 @@ paths:
           description: ''
   /v1/flows/{uuid}/create-contact-and-enroll/:
     post:
-      operationId: v1_flows_create_contact_and_enroll_create
+      operationId: flows_create_contact_and_enroll_create
       description: Create a new contact and enroll them in this flow. Returns an error
         if a contact with the provided email or phone already exists.
       summary: Create contact and enroll in flow
@@ -743,6 +865,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateContactAndEnroll'
         required: true
+      security:
+      - ApiKeyAuth: []
       responses:
         '201':
           content:
@@ -845,6 +969,12 @@ components:
         custom_fields:
           type: object
           additionalProperties: {}
+        enrollment_custom_fields:
+          type: object
+          additionalProperties: {}
+          description: Custom field values for the enrollment this call creates, keyed
+            by field UUID or key. The definitions must target flows.flowenrollment;
+            `custom_fields` targets the contact.
         on_match:
           nullable: true
           description: |-
@@ -1317,6 +1447,59 @@ components:
         is_in_use:
           type: boolean
           readOnly: true
+    PatchedPublicFlowEnrollment:
+      type: object
+      description: |-
+        Serializer mixin that adds custom field support to any model serializer.
+
+        The target model must have a `custom_data` JSONField.
+
+        Usage:
+            class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):
+                class Meta:
+                    model = Contact
+                    fields = [..., "custom_fields"]
+
+        Read response format:
+            "custom_fields": {
+                "<field_uuid>": {
+                    "value": <the_value>,
+                    "name": "Company",
+                    "field_type": "char",
+                    "required": false
+                }
+            }
+
+        Write request format:
+            "custom_fields": {
+                "<field_uuid>": <value>
+            }
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/FlowEnrollmentStatusesEnum'
+          readOnly: true
+        flow_uuid:
+          type: string
+          format: uuid
+        contact_uuid:
+          type: string
+          format: uuid
+        custom_fields:
+          type: object
+          additionalProperties: {}
     PhoneNumber:
       type: object
       properties:
@@ -1415,6 +1598,31 @@ components:
       - uuid
     PublicFlowEnrollment:
       type: object
+      description: |-
+        Serializer mixin that adds custom field support to any model serializer.
+
+        The target model must have a `custom_data` JSONField.
+
+        Usage:
+            class ContactSerializer(CustomFieldSerializerMixin, BaseNestedModelSerializer):
+                class Meta:
+                    model = Contact
+                    fields = [..., "custom_fields"]
+
+        Read response format:
+            "custom_fields": {
+                "<field_uuid>": {
+                    "value": <the_value>,
+                    "name": "Company",
+                    "field_type": "char",
+                    "required": false
+                }
+            }
+
+        Write request format:
+            "custom_fields": {
+                "<field_uuid>": <value>
+            }
       properties:
         uuid:
           type: string
@@ -1438,6 +1646,9 @@ components:
         contact_uuid:
           type: string
           format: uuid
+        custom_fields:
+          type: object
+          additionalProperties: {}
       required:
       - contact_uuid
       - created
@@ -1445,11 +1656,12 @@ components:
       - modified
       - status
       - uuid
-    CurrentPassword:
-      type: object
-      properties:
-        current_password:
-          type: string
-          writeOnly: true
-      required:
-      - current_password
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Your account API key
+servers:
+- url: https://api.dripdrop.dev
+  description: Drip Drop API

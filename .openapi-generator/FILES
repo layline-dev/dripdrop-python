@@ -7,7 +7,6 @@ docs/ContactAlreadyExists.md
 docs/ContactsApi.md
 docs/CreateContactAndEnroll.md
 docs/CreateContactAndEnrollSuccess.md
-docs/CurrentPassword.md
 docs/CustomFieldDefinition.md
 docs/CustomFieldsApi.md
 docs/DuplicateCluster.md
@@ -29,6 +28,7 @@ docs/PaginatedPublicFlowEnrollmentList.md
 docs/PaginatedPublicFlowList.md
 docs/PatchedContact.md
 docs/PatchedCustomFieldDefinition.md
+docs/PatchedPublicFlowEnrollment.md
 docs/PhoneNumber.md
 docs/PublicContactBulkCreateConflict.md
 docs/PublicContactBulkCreateRequest.md
@@ -54,7 +54,6 @@ dripdrop/models/contact.py
 dripdrop/models/contact_already_exists.py
 dripdrop/models/create_contact_and_enroll.py
 dripdrop/models/create_contact_and_enroll_success.py
-dripdrop/models/current_password.py
 dripdrop/models/custom_field_definition.py
 dripdrop/models/duplicate_cluster.py
 dripdrop/models/duplicate_cluster_contact.py
@@ -73,6 +72,7 @@ dripdrop/models/paginated_public_flow_enrollment_list.py
 dripdrop/models/paginated_public_flow_list.py
 dripdrop/models/patched_contact.py
 dripdrop/models/patched_custom_field_definition.py
+dripdrop/models/patched_public_flow_enrollment.py
 dripdrop/models/phone_number.py
 dripdrop/models/public_contact_bulk_create_conflict.py
 dripdrop/models/public_contact_bulk_create_request.py
@@ -85,16 +85,5 @@ dripdrop/py.typed
 dripdrop/rest.py
 git_push.sh
 test/__init__.py
-test/test_duplicate_cluster.py
-test/test_duplicate_cluster_contact.py
-test/test_import_resolution.py
-test/test_on_duplicate_enum.py
-test/test_on_match_enum.py
-test/test_outcome_enum.py
-test/test_paginated_duplicate_cluster_list.py
-test/test_public_contact_bulk_create_conflict.py
-test/test_public_contact_bulk_create_request.py
-test/test_public_contact_bulk_create_response.py
-test/test_public_contact_duplicate_preview_request.py
-test/test_public_contact_duplicate_preview_response.py
+test/test_patched_public_flow_enrollment.py
 tox.ini
